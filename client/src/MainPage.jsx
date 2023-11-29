@@ -42,6 +42,7 @@ function MainPage() {
   const effortPointOptions = [1, 2, 3, 4, 5, 6];
 
   const getTasks = async () => {
+    setLoadingTasks(false);
     try {
       loginWithStoredCredentials();
       if (user) {
@@ -50,19 +51,16 @@ function MainPage() {
       }
     } catch (error) {
       console.error('Error fetching tasks:', error.message);
-    } finally {
-      setLoadingTasks(false);
     }
   };
 
   const getIngredients = async () => {
+    setLoadingIngredients(false);
     try {
       const ingredientsData = await YourIngredients(user);
       setIngredients(ingredientsData);
     } catch (error) {
       console.error('Error fetching ingredients:', error.message);
-    } finally {
-      setLoadingIngredients(false);
     }
   };
 
@@ -213,6 +211,22 @@ function MainPage() {
     }
   };
 
+  const sortByName = () => {
+    setTasks([...tasks.sort((a, b) => (a.Desc > b.Desc) - (a.Desc < b.Desc))]);
+  }
+
+  const sortByIngredient = () => {
+    setTasks([...tasks.sort((a, b) => (a.Ingredient > b.Ingredient) - (a.Ingredient < b.Ingredient))]);
+  }
+
+  const sortByDate = () => {
+    setTasks([...tasks.sort((a, b) => (a.DueDate > b.DueDate) - (a.DueDate < b.DueDate))]);
+  }
+
+  const sortByEffort = () => {
+    setTasks([...tasks.sort((a, b) => (a.EffortPoints > b.EffortPoints) - (a.EffortPoints < b.EffortPoints))]);
+  }
+
   return (
     <>
       <h1>Veggie Tasks</h1>
@@ -279,34 +293,58 @@ function MainPage() {
 
               {loadingTasks && <p>Loading tasks...</p>}
               {!loadingTasks && tasks.length === 0 && <p>No tasks available</p>}
-              {!loadingTasks &&
-                tasks.map((task) => (
-                  <div key={task._id} className="task-container">
-                    <p>{`Task: ${task.Desc}, 
-                Ingredient: ${task.Ingredient}, 
-                Due Date: ${formatDate(task.DueDate)},
-                Effort Points: ${task.EffortPoints}`}</p>
-                    <button
-                      type="button"
-                      className="dropdown-button"
-                      onClick={() =>
-                        setTaskDropdowns((prevDropdowns) => ({
-                          ...prevDropdowns,
-                          [task._id]: !prevDropdowns[task._id],
-                        }))
-                      }
-                    >
-                      Options
-                    </button>
-                    {taskDropdowns[task._id] && (
-                      <DropdownOptions
-                        onDelete={(e) => handleDeleteClick(task._id, e)}
-                        onFinish={(e) => handleFinishTask(task._id, e)}
-                        onEdit={(e) => handleEditClick(task._id, e)}
-                      />
-                    )}
-                  </div>
-                ))}
+               <table>
+              <thead>
+                <tr>
+                  <th scope='col' onClick={() => sortByName()}>Task Name</th>
+                  <th scope='col' onClick={() => sortByIngredient()}>Ingredeient</th>
+                  <th scope='col' onClick={() => sortByDate()}>Due by</th>
+                  <th scope='col' onClick={() => sortByEffort()}>Effort</th>
+                  <th scope='col'>Delete</th>
+                  <th scope='col'>Finish</th>
+                  <th scope='col'>Edit</th>
+                </tr>
+              </thead>
+              <tbody>
+              {!loadingTasks && tasks.map(task => (
+                <tr>
+                    <td>{`${task.Desc}`}</td>
+                    <td>{`${task.Ingredient}`}</td>
+                    <td>{`${task.DueDate.split("T")[0]}`}</td>
+                    <td>{`${task.EffortPoints}`}</td>
+                  <td><button
+                    type="button"
+                    className="delete-button"
+                    onClick={(e) => handleDeleteClick(task._id, e)}
+                    className="taskButton"
+                  >
+                    Delete
+                  </button>
+                  </td>
+                  <td>
+                  <button
+                    type="button"
+                    className="finish-button"
+                    onClick={(e) => handleFinishTask(task._id, e)}
+                    className="taskButton"
+                  >
+                    Finish
+                  </button>
+                  </td>
+                  <td>
+                  <button
+                    type="button"
+                    className="edit-button"
+                    onClick={(e) => handleEditClick(task._id, e)}
+                    className="taskButton"
+                  >
+                    Edit
+                  </button>
+                  </td>
+                </tr>
+              ))}
+              </tbody>
+              </table>
 
               {showDeleteConfirmation && (
                 <>

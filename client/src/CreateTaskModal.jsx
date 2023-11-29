@@ -113,32 +113,14 @@ if (!taskName || pickedIngredient === 'Pick an Ingredient' || !dueDate || !effor
                             popperPlacement="bottom-start"
                         />
                     </div>
-                    <div className="datepicker-container">
-                        <DatePicker
-                            selected={dueDate}
-                            onChange={(date) => setDueDate(date)}
-                            customInput={<DateButton2 />} // Custom button
-                            dateFormat="h:mm aa" // Display both date and time
-                            showTimeSelect // Show the time input
-                            showTimeSelectOnly // Hide the date input
-                            timeIntervals={15} // Set time intervals (in minutes)
-                            timeCaption="Time" // Text for the time input label
-                            placeholderText="Select Due Date and Time"
-                            popperPlacement="bottom-start" // Align pop-up to bottom-left
-                        />
-                    </div>
-                    <select
-                        id="effortPoints"
-                        value={effortPoints}
+                    <input
+                        className="rounded-pill p-2 mb-4"
+                        id="EffortPoints"
+                        placeholder="Effort"
+                        required
                         onChange={(e) => setEffortPoints(e.target.value)}
-                    >
-                        <option value="">Select Effort Points</option>
-                        {effortPointOptions.map((option) => (
-                            <option key={option} value={option}>
-                                {option}
-                            </option>
-                        ))}
-                    </select>
+                        type='number'
+                    />
                     <button
                         type="button"
                         onClick={() => setShowDropdown(!showDropdown)}
@@ -162,13 +144,6 @@ const DateButton = ({ value, onClick }) => (
     <div className="date-button-container">
         <button type="button" className="date-button" onClick={onClick}>
             {value || 'Select Due Date'}
-        </button>
-    </div>
-);
-const DateButton2 = ({ value, onClick }) => (
-    <div className="date-button-container">
-        <button type="button" className="date-button" onClick={onClick}>
-            {value || 'Select Time'}
         </button>
     </div>
 );
